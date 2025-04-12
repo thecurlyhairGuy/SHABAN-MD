@@ -1,6 +1,6 @@
-const axios = require("axios");
-const config = require('../config');
 const { cmd } = require('../command');
+const axios = require('axios');
+const { getBuffer } = require('../lib/myfunc'); // agar tumhara project mein helper function hai toh
 
 cmd({
   pattern: "swb",
@@ -17,11 +17,13 @@ async (conn, mek, m, {
   if (!q) return reply("Please provide a URL to capture a screenshot.");
 
   try {
-    const response = await axios.get(`https://api.giftedtech.web.id/api/tools/ssweb?apikey=gifted&url=${encodeURIComponent(q)}`);
-    const screenshotUrl = response.data.result;
+    const url = `https://api.giftedtech.web.id/api/tools/ssweb?apikey=gifted&url=${encodeURIComponent(q)}`;
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+
+    const buffer = Buffer.from(response.data, 'binary');
 
     const imageMessage = {
-      image: { url: screenshotUrl },
+      image: buffer,
       caption: "*WEB SS DOWNLOADER*\n\n> *SHABAN-MD*",
       contextInfo: {
         mentionedJid: [m.sender],

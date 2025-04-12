@@ -59,7 +59,7 @@ async (conn, mek, m, { from, args, q, reply, pushname }) => {
         await conn.sendMessage(from, {
             video: { url: media },
             mimetype: "video/mp4",
-            caption: `*SnackVideo downloaded for you, ${pushname}!*`
+            caption: `*SHABAN-MD DOWNLOADER*`
         }, { quoted: mek });
 
     } catch (e) {

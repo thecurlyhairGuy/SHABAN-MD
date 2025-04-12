@@ -1,7 +1,7 @@
 {
   "name": "SHABAN-MD",
   "description": "Javascript WhatsApp bot made by MR-SHABAN",
-  "logo": "https://i.ibb.co/gb3ZMRTX/shaban-md.jpg",
+  "logo": "https://i.ibb.co/qYtzFsVp/shaban-md.jpg",
   "keywords": ["SHABAN-MD"],
   "success_url": "/",
 
@@ -18,6 +18,12 @@
       "required": false,
       "value": "SHABAN-MD"
     }, 
+      
+      "ALIVE_IMG": {
+      "description": "put here the bot Menu url if you don't have you can use this public url.",
+      "required": true,
+      "value": "https://i.ibb.co/7N20Qb1W/shaban-md.jpg" 
+      },
       
     "PREFIX": {
       "description": "paste your bot prefix note! Don't apply null prefix.",

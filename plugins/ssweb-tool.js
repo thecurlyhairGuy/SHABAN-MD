@@ -4,37 +4,48 @@ const { cmd } = require('../command');
 
 cmd({
   pattern: "sss",
-  alias: ["screenweb"],
-  react: "💫",
+  alias: ["ssweb"],
+  react: "🛰️",
   desc: "Download screenshot of a given link.",
   category: "other",
   use: ".ss <link>",
   filename: __filename,
 }, 
-async (conn, mek, m, { from, q, reply }) => {
+async (conn, mek, m, {
+  from, l, quoted, body, isCmd, command, args, q, isGroup, sender, 
+  senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, 
+  groupMetadata, groupName, participants, isItzcp, groupAdmins, 
+  isBotAdmins, isAdmins, reply 
+}) => {
   if (!q) {
-    return reply("❗ براہ کرم اسکرین شاٹ لینے کے لیے ایک لنک فراہم کریں۔");
+    return reply("Please provide a URL to capture a screenshot.");
   }
 
   try {
-    const screenshotUrl = `https://bk9.fun/tools/screenshot?url=${encodeURIComponent(q)}`;
-    
-    // Testing API response
-    const response = await axios.get(screenshotUrl, { responseType: 'arraybuffer' });
+    // created by jawad tech 
+    const response = await axios.get(`https://api.davidcyriltech.my.id/ssweb?url=${q}`);
+    const screenshotUrl = response.data.screenshotUrl;
 
-    if (!response || response.status !== 200) {
-      return reply("⚠️ اسکرین شاٹ لینے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔");
-    }
+    // give credit and use
+    const imageMessage = {
+      image: { url: screenshotUrl },
+      caption: "*WEB SS DOWNLOADER*\n\n> *SHABAN-MD*",
+      contextInfo: {
+        mentionedJid: [m.sender],
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: '120363358310754973@newsletter',
+          newsletterName: "☇MR-SHABAN",
+          serverMessageId: 143,
+        },
+      },
+    };
 
-    const imageBuffer = Buffer.from(response.data, 'binary');
-
-    await conn.sendMessage(from, { 
-      image: imageBuffer, 
-      caption: "*📸 WEB SCREENSHOT DOWNLOADER*\n\n> *© Powered By Shaban Md*" 
-    }, { quoted: m });
-
+    await conn.sendMessage(from, imageMessage, { quoted: m });
   } catch (error) {
-    console.error("Error:", error);
-    reply("⚠️ اسکرین شاٹ لینے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔");
+    console.error(error);
+    reply("Failed to capture the screenshot. Please try again.");
   }
 });
+

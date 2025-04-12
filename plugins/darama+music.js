@@ -1,6 +1,7 @@
 const {cmd , commands} = require('../command')
 const fg = require('api-dylux')
 const yts = require('yt-search')
+
 cmd({
     pattern: "play5",
     desc: "To download songs.",
@@ -9,14 +10,14 @@ cmd({
     filename: __filename
 },
 async(conn, mek, m,{from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
-try{
-if(!q) return reply("Please give me a url or title")  
-const search = await yts(q)
-const data = search.videos[0];
-const url = data.url
-    
-    
-let desc = `
+try {
+    if (!q) return reply("Please give me a url or title");
+
+    const search = await yts(q);
+    const data = search.videos[0];
+    const url = data.url;
+
+    let desc = `
 *⫷⦁SHABAN-MD MUSⵊC DOWNLOADⵊNG⦁⫸*
 
 🎵 *MUSⵊC FOUND!* 
@@ -30,24 +31,30 @@ let desc = `
 🎧 *ENJOY THE MUSIC BROUGHT TO YOU!*
 
 > *SHABAN-MD WHATSAPP BOT* 
-
 > *© ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴍʀ-sʜᴀʙᴀɴ* 
-`
+`;
 
-await conn.sendMessage(from,{image:{url: data.thumbnail},caption:desc},{quoted:mek});
+    await conn.sendMessage(from, { image: { url: data.thumbnail }, caption: desc }, { quoted: mek });
 
-//download audio
+    // Use new API
+    let apiRes = await fetch(`https://api.giftedtech.web.id/api/download/ytmp3?apikey=gifted&url=${encodeURIComponent(url)}`);
+    let json = await apiRes.json();
 
-let down = await fg.yta(url)
-let downloadUrl = down.dl_url
+    if (!json.success) return reply("Failed to fetch audio from new API");
 
-//send audio message
-await conn.sendMessage(from,{audio: {url:downloadUrl},mimetype:"audio/mpeg"},{quoted:mek})
-await conn.sendMessage(from,{document: {url:downloadUrl},mimetype:"audio/mpeg",fileName:data.title + ".mp3",caption:"*© ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴍʀ-sʜᴀʙᴀɴ*"},{quoted:mek})
+    let downloadUrl = json.result.download_url;
 
-}catch(e){
-console.log(e)
-  reply(`_Hi ${pushname} retry later_`)
+    await conn.sendMessage(from, { audio: { url: downloadUrl }, mimetype: "audio/mpeg" }, { quoted: mek });
+    await conn.sendMessage(from, {
+        document: { url: downloadUrl },
+        mimetype: "audio/mpeg",
+        fileName: json.result.title + ".mp3",
+        caption: "*© ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴍʀ-sʜᴀʙᴀɴ*"
+    }, { quoted: mek });
+
+} catch (e) {
+    console.log(e);
+    reply(`_Hi ${pushname}, retry later_`);
 }
 })
 

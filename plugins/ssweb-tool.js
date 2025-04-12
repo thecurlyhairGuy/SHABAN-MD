@@ -1,4 +1,3 @@
-const { cmd } = require('../command');
 const axios = require('axios');
 const { getBuffer } = require('../lib/myfunc'); // agar tumhara project mein helper function hai toh
 

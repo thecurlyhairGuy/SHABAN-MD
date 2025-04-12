@@ -1,7 +1,7 @@
 {
-  "name": "SHABAN-MD",
-  "description": "Javascript WhatsApp bot made by MR-SHABAN",
-  "logo": "https://i.ibb.co/qYtzFsVp/shaban-md.jpg",
+  "name": "᯾𝐒𝐇𝐀𝐁𝐀𝐍-𝐌𝐃᯾",
+  "description": "Javascript WhatsApp bot made by 𝐌𝐑/𝐒𝐇𝐀𝐁𝐀𝐍",
+  "logo": "https://i.ibb.co/0jBTY0gS/shaban-md.jpg",
   "keywords": ["SHABAN-MD"],
   "success_url": "/",
 
@@ -16,14 +16,8 @@
     "STICKER_NAME": {
       "description": "type your sticker pack name.",
       "required": false,
-      "value": "SHABAN-MD"
+      "value": "♕︎SʜᴀʙᴀɴMᴅ♕︎"
     }, 
-      
-      "ALIVE_IMG": {
-      "description": "put here the bot Menu url if you don't have you can use this public url.",
-      "required": true,
-      "value": "https://i.ibb.co/7N20Qb1W/shaban-md.jpg" 
-      },
       
     "PREFIX": {
       "description": "paste your bot prefix note! Don't apply null prefix.",
@@ -33,7 +27,7 @@
     
     "MODE": {
       "description": "select your bot work type public-private-inbox-group.",
-      "required": true,
+      "required": false,
       "value": "public"
       
     },
@@ -85,77 +79,63 @@
     "AUTO_STATUS_MSG": {
       "description": "Type custom message on status reply",
       "required": true,
-      "value": "*🪩SEEN YOUR STATUS SHABAN-MD🪩*"
+      "value": "*SᴇᴇN YᴏᴜʀE SᴛᴀᴛᴜS JᴜsT NᴏW Sʜᴀʙᴀɴ-Mᴅ 𓅓*"
    
      }, 
-    
-    "OWNER_NAME": {
-      "description": "Type Bot Owner Name.",
-      "required": false,
-      "value": "MR-SHABAN"
-}, 
-
-    "OWNER_NUMBER": {
-      "description": "put the owner number for bot.",
-      "required": true,
-      "value": "923043788282"
-
-    }, 
 
     "BOT_NAME": {
       "description": "Type here the bot name.",
       "required": false,
-      "value": "SHABAN-MD"
+      "value": "𝐒𝐇𝐀𝐁𝐀𝐍-𝐌𝐃"
 
       }, 
-
-    "ANTI_LINK": {
-      "description": "Make it true if you want bot auto remove group link.",
-      "required": true,
-      "value": "true"
-      
-    },
     
-    "ANTI_BAD": {
-      "description": "Make it true if you want bot auto delete bad words.",
+    "ALIVE_IMG": {
+      "description": "put here the bot Menu url if you don't have you can use this public url.",
       "required": true,
+      "value": "https://i.ibb.co/7N20Qb1W/shaban-md.jpg" 
+      },
+
+    "DELETE_LINK": {
+      "description": "Make it true if you want bot auto remove group link.",
+      "required": false,
       "value": "false"
     }, 
-
-     "DESCRIPTION": {
-      "description": "add caption for menu and other",
+    
+    "ANTI_LINK": {
+      "description": "Make it true if you want bot auto remove group link.",
       "required": false,
-      "value": "*© ᴘᴏᴡᴇʀᴇᴅ ʙʏ Mʀ Sʜᴀʙᴀɴ*"
-    },
-
-      "DELETE_LINKS": {
-      "description": "remove links from group automatically without removing member",
-      "required": true,
+      "value": "true"
+    }, 
+    
+    "ANTI_BAD_WORD": {
+      "description": "Make it true if you want bot auto delete bad words.",
+      "required": false,
       "value": "false"
-    },
+    }, 
     
     "AUTO_RECORDING": {
       "description": "Make it true if you want auto recoding.",
-      "required": true,
+      "required": false,
       "value": "false"
     },
 
     "AUTO_TYPING": {
       "description": "Make it true if you want auto typing.",
-      "required": true,
+      "required": false,
       "value": "false"
     },
 
     "AUTO_REACT": {
       "description": "Make it true if you want react on every message.",
-      "required": true,
+      "required": false,
       "value": "false"
     },
     
     "CUSTOM_REACT": {
       "description": "Make it true if you want custom reactions.",
-      "required": true,
-      "value": "false"
+      "required": false,
+      "value": "true"
       
     }, 
     
@@ -173,7 +153,7 @@
 
     "READ_MESSAGE": {
       "description": "Make it true if you want bot read your all sms just now.",
-      "required": true,
+      "required": false,
       "value": "false"
     }
 

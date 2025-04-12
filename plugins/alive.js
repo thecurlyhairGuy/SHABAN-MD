@@ -1,6 +1,6 @@
 const { cmd } = require("../command");
 const moment = require("moment");
-const config = require("../config")"
+const config = require("../config");
 
 let botStartTime = Date.now(); // Enregistrement de l'heure de démarrage du bot
 const ALIVE_IMG = config.ALIVE_IMG;

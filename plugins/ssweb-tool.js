@@ -1,5 +1,7 @@
-const axios = require('axios');
-const { getBuffer } = require('../lib/myfunc'); // agar tumhara project mein helper function hai toh
+const axios = require("axios");
+const config = require('../config');
+const { cmd } = require('../command');
+const { getBuffer } = require('../lib/functions'); // agar tumhara project mein helper function hai toh
 
 cmd({
   pattern: "swb",

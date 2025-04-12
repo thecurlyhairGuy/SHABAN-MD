@@ -93,7 +93,7 @@
     "ALIVE_IMG": {
       "description": "put here the bot Menu url if you don't have you can use this public url.",
       "required": true,
-      "value": "https://i.ibb.co/7N20Qb1W/shaban-md.jpg" 
+      "value": "https://i.ibb.co/HLbxFy0M/shaban-md.jpg" 
       },
 
     "DELETE_LINK": {

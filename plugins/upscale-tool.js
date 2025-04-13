@@ -3,8 +3,7 @@ const config = require('../config');
 const { cmd } = require('../command');
 const FormData = require("form-data");
 const fs = require("fs");
-const { getBuffer } = require('../lib/functions'); // agar tumhara project mein helper function hai toh
-
+const { getBuffer } = require('../lib/functions'); // agar tumhara project mein helper function hai to
 
 cmd({
   pattern: "upscale",
@@ -31,8 +30,10 @@ async (conn, mek, m, {
       const media = await conn.downloadMediaMessage(m.quoted);
       if (!media) return reply("Failed to download the replied image.");
 
+      const buffer = typeof media === "string" ? Buffer.from(media, "base64") : media;
+
       const form = new FormData();
-      form.append("image", Buffer.from(media), {
+      form.append("image", buffer, {
         filename: "image.jpg",
         contentType: "image/jpeg"
       });

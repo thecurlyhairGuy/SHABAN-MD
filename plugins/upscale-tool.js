@@ -5,32 +5,39 @@ const FormData = require("form-data");
 const fs = require("fs");
 const { getBuffer } = require('../lib/functions'); // agar tumhara project mein helper function hai toh
 
+
 cmd({
   pattern: "upscale",
   alias: ["enhance", "enh"],
   react: "🖼️",
-  desc: "Upscale a given image via URL or by replying to an image.",
+  desc: "Upscale image via URL or replying to an image.",
   category: "tools",
-  use: ".upscale <image-url> (or reply to an image)",
+  use: ".upscale <url> or reply to an image",
   filename: __filename,
 },
 async (conn, mek, m, {
   from, q, reply
 }) => {
-  let imageBuffer;
-
   try {
+    let imageBuffer;
+
     if (q) {
-      // If user gave an image URL
+      // Image from URL
       const apiURL = `https://api.siputzx.my.id/api/iloveimg/upscale?image=${encodeURIComponent(q)}`;
       const response = await axios.get(apiURL, { responseType: 'arraybuffer' });
       imageBuffer = Buffer.from(response.data, 'binary');
-    } else if (m.quoted && m.quoted.mtype === 'imageMessage') {
-      // If user replied to an image
+    } else if (m.quoted && /image/.test(m.quoted.mtype)) {
+      // Replied image
+      console.log("Trying to download quoted image...");
       const img = await conn.downloadMediaMessage(m.quoted);
+      if (!img) {
+        console.log("Image download failed.");
+        return reply("Couldn't download the image. Try again.");
+      }
+
       const form = new FormData();
       form.append("image", img, {
-        filename: "input.jpg",
+        filename: "upscale.jpg",
         contentType: "image/jpeg"
       });
 
@@ -39,30 +46,23 @@ async (conn, mek, m, {
         responseType: "arraybuffer"
       });
 
-      imageBuffer = Buffer.from(response.data, "binary");
+      imageBuffer = Buffer.from(response.data, 'binary');
     } else {
-      return reply("Please provide an image URL or reply to an image.");
+      return reply("Reply to an image or provide a direct image URL.");
     }
 
-    const imageMessage = {
+    await conn.sendMessage(from, {
       image: imageBuffer,
-      caption: "*IMAGE UPSCALED SUCCESSFULLY*\n\n> *SHABAN-MD POWERED*",
+      caption: "*Image upscaled successfully!*",
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363358310754973@newsletter',
-          newsletterName: "☇MR-SHABAN",
-          serverMessageId: 143,
-        },
-      },
-    };
+        isForwarded: true
+      }
+    }, { quoted: m });
 
-    await conn.sendMessage(from, imageMessage, { quoted: m });
-
-  } catch (error) {
-    console.error("Upscale Error:", error?.response?.data || error.message);
+  } catch (err) {
+    console.error("Upscale Error:", err.message || err);
     reply("Failed to upscale the image. Try replying to an image or providing a valid URL.");
   }
 });

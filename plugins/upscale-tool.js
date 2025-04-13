@@ -1,7 +1,6 @@
 const axios = require("axios");
-const config = require('../config');
-const { cmd } = require('../command');
-const { getBuffer } = require('../lib/functions'); // agar tumhara project mein helper function hai toh
+const FormData = require("form-data");
+const fs = require("fs");
 
 cmd({
   pattern: "upscale",
@@ -13,7 +12,7 @@ cmd({
   filename: __filename,
 },
 async (conn, mek, m, {
-  from, q, reply, mime
+  from, q, reply
 }) => {
   let imageBuffer;
 
@@ -25,20 +24,19 @@ async (conn, mek, m, {
       imageBuffer = Buffer.from(response.data, 'binary');
     } else if (m.quoted && m.quoted.mtype === 'imageMessage') {
       // If user replied to an image
-      const imgStream = await conn.downloadMediaMessage(m.quoted);
+      const img = await conn.downloadMediaMessage(m.quoted);
       const form = new FormData();
-      form.append("image", imgStream, {
+      form.append("image", img, {
         filename: "input.jpg",
         contentType: "image/jpeg"
       });
 
-      const apiURL = "https://api.siputzx.my.id/api/iloveimg/upscale";
-      const response = await axios.post(apiURL, form, {
+      const response = await axios.post("https://api.siputzx.my.id/api/iloveimg/upscale", form, {
         headers: form.getHeaders(),
-        responseType: 'arraybuffer'
+        responseType: "arraybuffer"
       });
 
-      imageBuffer = Buffer.from(response.data, 'binary');
+      imageBuffer = Buffer.from(response.data, "binary");
     } else {
       return reply("Please provide an image URL or reply to an image.");
     }
@@ -61,7 +59,7 @@ async (conn, mek, m, {
     await conn.sendMessage(from, imageMessage, { quoted: m });
 
   } catch (error) {
-    console.error(error);
+    console.error("Upscale Error:", error?.response?.data || error.message);
     reply("Failed to upscale the image. Try replying to an image or providing a valid URL.");
   }
 });

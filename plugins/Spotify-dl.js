@@ -16,43 +16,40 @@ async (conn, mek, m, { from, args, q, reply, pushname }) => {
 
         reply("⏳ *Fetching Spotify track... Please wait!*");
 
-        const { data } = await axios.get(`https://api.giftedtech.web.id/api/download/spotifydl`, {
-            params: {
-                apikey: "gifted", // <-- Yahan apna actual API key dalna ho to update kar lena
-                url: q
-            }
+        const { data } = await axios.get(`https://api.genux.me/api/download/spotify`, {
+            params: { url: q }
         });
 
-        if (!data.success || !data.result) return reply("*Failed to fetch Spotify track. Please try again later.*");
+        if (!data.status || !data.result) return reply("*Failed to fetch Spotify track. Please try again later.*");
 
         const {
             title,
-            duration,
-            quality,
-            thumbnail,
-            download_url
+            type,
+            artists,
+            cover,
+            music
         } = data.result;
 
         const caption = `
 *⫷⦁ SPOTIFY DOWNLOADER ⦁⫸*
 
 🎵 *Title:* ${title}
-⏱️ *Duration:* ${duration}
-🔊 *Quality:* ${quality}
+🧑‍🎤 *Artists:* ${artists}
+🎶 *Type:* ${type}
 
 > *DOWNLOADED BY SHABAN-MD*
 > *© CREATED BY MR-SHABAN*
 `.trim();
 
-        // Send thumbnail with info
+        // Send cover image with info
         await conn.sendMessage(from, {
-            image: { url: thumbnail },
+            image: { url: cover },
             caption: caption
         }, { quoted: mek });
 
         // Send the actual MP3 file
         await conn.sendMessage(from, {
-            audio: { url: download_url },
+            audio: { url: music },
             mimetype: "audio/mpeg",
             ptt: false
         }, { quoted: mek });

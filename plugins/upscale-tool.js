@@ -1,6 +1,7 @@
 const axios = require("axios");
 const FormData = require("form-data");
 const fs = require("fs");
+const { getBuffer } = require('../lib/functions'); // agar tumhara project mein helper function hai toh
 
 cmd({
   pattern: "upscale",

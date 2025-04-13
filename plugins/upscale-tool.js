@@ -5,7 +5,7 @@ const { getBuffer } = require('../lib/functions'); // agar tumhara project mein 
 
 cmd({
   pattern: "upscale",
-  alias: ["upsc", "hd"],
+  alias: ["hd", "saaf"],
   react: "🖼️",
   desc: "Upscale a given image URL.",
   category: "tools",
@@ -19,15 +19,9 @@ async (conn, mek, m, {
 
   try {
     const apiURL = `https://api.siputzx.my.id/api/iloveimg/upscale?image=${encodeURIComponent(q)}`;
-    const { data } = await axios.get(apiURL);
+    const response = await axios.get(apiURL, { responseType: 'arraybuffer' });
 
-    // Assuming API response structure is like: { status: true, result: "data:image/jpeg;base64,..." }
-    if (!data || !data.result || !data.result.startsWith('data:image')) {
-      return reply("Unexpected API response. Please try another image.");
-    }
-
-    const base64Image = data.result.split(',')[1]; // Remove "data:image/jpeg;base64,"
-    const buffer = Buffer.from(base64Image, 'base64');
+    const buffer = Buffer.from(response.data, 'binary');
 
     const imageMessage = {
       image: buffer,
@@ -47,6 +41,6 @@ async (conn, mek, m, {
     await conn.sendMessage(from, imageMessage, { quoted: m });
   } catch (error) {
     console.error(error);
-    reply("Failed to upscale the image. Please make sure the URL is valid and try again.");
+    reply("Failed to upscale the image. Make sure the image URL is valid and try again.");
   }
 });

@@ -22,22 +22,18 @@ async (conn, mek, m, {
     let imageBuffer;
 
     if (q) {
-      // Image from URL
+      // From direct URL
       const apiURL = `https://api.siputzx.my.id/api/iloveimg/upscale?image=${encodeURIComponent(q)}`;
       const response = await axios.get(apiURL, { responseType: 'arraybuffer' });
       imageBuffer = Buffer.from(response.data, 'binary');
-    } else if (m.quoted && /image/.test(m.quoted.mtype)) {
-      // Replied image
-      console.log("Trying to download quoted image...");
-      const img = await conn.downloadMediaMessage(m.quoted);
-      if (!img) {
-        console.log("Image download failed.");
-        return reply("Couldn't download the image. Try again.");
-      }
+    } else if (m.quoted && m.quoted.mtype === 'imageMessage') {
+      // From replied image
+      const media = await conn.downloadMediaMessage(m.quoted);
+      if (!media) return reply("Failed to download the replied image.");
 
       const form = new FormData();
-      form.append("image", img, {
-        filename: "upscale.jpg",
+      form.append("image", Buffer.from(media), {
+        filename: "image.jpg",
         contentType: "image/jpeg"
       });
 
@@ -62,7 +58,7 @@ async (conn, mek, m, {
     }, { quoted: m });
 
   } catch (err) {
-    console.error("Upscale Error:", err.message || err);
+    console.error("Upscale Error:", err);
     reply("Failed to upscale the image. Try replying to an image or providing a valid URL.");
   }
 });

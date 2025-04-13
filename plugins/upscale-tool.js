@@ -5,26 +5,46 @@ const { getBuffer } = require('../lib/functions'); // agar tumhara project mein 
 
 cmd({
   pattern: "upscale",
-  alias: ["hd", "saaf"],
+  alias: ["enhance", "enh"],
   react: "🖼️",
-  desc: "Upscale a given image URL.",
+  desc: "Upscale a given image via URL or by replying to an image.",
   category: "tools",
-  use: ".upscale <image-url>",
+  use: ".upscale <image-url> (or reply to an image)",
   filename: __filename,
 },
 async (conn, mek, m, {
-  from, q, reply
+  from, q, reply, mime
 }) => {
-  if (!q) return reply("Please provide a direct image URL to upscale.");
+  let imageBuffer;
 
   try {
-    const apiURL = `https://api.siputzx.my.id/api/iloveimg/upscale?image=${encodeURIComponent(q)}`;
-    const response = await axios.get(apiURL, { responseType: 'arraybuffer' });
+    if (q) {
+      // If user gave an image URL
+      const apiURL = `https://api.siputzx.my.id/api/iloveimg/upscale?image=${encodeURIComponent(q)}`;
+      const response = await axios.get(apiURL, { responseType: 'arraybuffer' });
+      imageBuffer = Buffer.from(response.data, 'binary');
+    } else if (m.quoted && m.quoted.mtype === 'imageMessage') {
+      // If user replied to an image
+      const imgStream = await conn.downloadMediaMessage(m.quoted);
+      const form = new FormData();
+      form.append("image", imgStream, {
+        filename: "input.jpg",
+        contentType: "image/jpeg"
+      });
 
-    const buffer = Buffer.from(response.data, 'binary');
+      const apiURL = "https://api.siputzx.my.id/api/iloveimg/upscale";
+      const response = await axios.post(apiURL, form, {
+        headers: form.getHeaders(),
+        responseType: 'arraybuffer'
+      });
+
+      imageBuffer = Buffer.from(response.data, 'binary');
+    } else {
+      return reply("Please provide an image URL or reply to an image.");
+    }
 
     const imageMessage = {
-      image: buffer,
+      image: imageBuffer,
       caption: "*IMAGE UPSCALED SUCCESSFULLY*\n\n> *SHABAN-MD POWERED*",
       contextInfo: {
         mentionedJid: [m.sender],
@@ -39,8 +59,9 @@ async (conn, mek, m, {
     };
 
     await conn.sendMessage(from, imageMessage, { quoted: m });
+
   } catch (error) {
     console.error(error);
-    reply("Failed to upscale the image. Make sure the image URL is valid and try again.");
+    reply("Failed to upscale the image. Try replying to an image or providing a valid URL.");
   }
 });

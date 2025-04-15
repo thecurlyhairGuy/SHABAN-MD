@@ -119,83 +119,64 @@ try {
 
 //drama-dl
 
-cmd({
-    pattern: "darama",
-    alias: ["drma-dl"],
-    desc: "To download videos.",
-    react: "⚡",
-    category: "download",
-    filename: __filename
-},
-async(conn, mek, m,{from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply, connWait}) => {
-try {
-    if (!q) return reply("⚠️ Please provide a YouTube title or link.");
+cmd({ 
+    pattern: "darama", 
+    alias: ["drma-dl", "yt4"], 
+    react: "🎥", 
+    desc: "Download Youtube song", 
+    category: "main", 
+    use: '.song < Yt url or Name >', 
+    filename: __filename 
+}, async (conn, mek, m, { from, prefix, quoted, q, reply }) => { 
+    try { 
+        if (!q) return await reply("*𝐏ℓєαʂє 𝐏ɼ๏νιɖє 𝐀 𝐘ʈ 𝐔ɼℓ ๏ɼ 𝐕ιɖє๏ 𝐍αмє..*");
+        
+        const yt = await ytsearch(q);
+        if (yt.results.length < 1) return reply("No results found!");
+        
+        let yts = yt.results[0];  
+        let apiUrl = `https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(yts.url)}`;
+        
+        let response = await fetch(apiUrl);
+        let json = await response.json();
+        
+        if (!json.status || !json.result || !json.result.download || !json.result.download.url) {
+            return reply("Failed to fetch the video. Please try again later.");
+        }
 
-    const search = await yts(q);
-    const data = search.videos[0];
-    const url = data.url;
+        const vid = json.result.data;
+        const dl = json.result.download;
 
-    await conn.sendMessage(from, {
-        image: { url: data.thumbnail },
-        caption: `🎬 *VIDEO FOUND*
+        let ytmsg = `╔═══〔 *𓆩ု᪳SHABAN-MDှ᪳𓆪* 〕═══❒
+║╭───────────────◆  
+║│ *❍ ᴠɪᴅᴇᴏ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ*
+║╰───────────────◆
+╚══════════════════❒
+╔══════════════════❒
+║ ⿻ *ᴛɪᴛʟᴇ:*  ${vid.title}
+║ ⿻ *ᴅᴜʀᴀᴛɪᴏɴ:*  ${vid.timestamp}
+║ ⿻ *ᴠɪᴇᴡs:*  ${vid.views}
+║ ⿻ *ᴀᴜᴛʜᴏʀ:*  ${vid.author.name}
+║ ⿻ *ʟɪɴᴋ:*  ${vid.url}
+╚══════════════════❒
+*ғꪮʀ ʏꪮꪊ ғꪮʀ ᴀʟʟ ꪮғ ᴀꜱ*`;
 
-• Title: ${data.title}
-• Duration: ${data.timestamp}
-• Views: ${data.views}
-• Uploaded: ${data.ago}
-• URL: ${data.url}
+        // Send video details with thumbnail
+        await conn.sendMessage(from, { image: { url: vid.thumbnail }, caption: ytmsg }, { quoted: mek });
 
-⏳ Getting quality options...`
-    }, { quoted: mek });
+        // Send video file
+        await conn.sendMessage(from, { video: { url: dl.url }, mimetype: "video/mp4" }, { quoted: mek });
 
-    // Call the API
-    const res = await fetch(`https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(url)}`);
-    const json = await res.json();
+        // Optionally send as document
+        await conn.sendMessage(from, {
+            document: { url: dl.url },
+            mimetype: "video/mp4",
+            fileName: dl.filename,
+            caption: `*${vid.title}*\n> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴀʟɪ🎐*`
+        }, { quoted: mek });
 
-    if (!json.status) return reply("❌ Failed to fetch video info.");
-
-    const availableQualities = json.result.download.availableQuality;
-
-    let qualityList = availableQualities.map((q, i) => `${i + 1}. ${q}p`).join("\n");
-    await reply(`✨ *Select a quality:*\n\n${qualityList}\n\n📥 Reply with the number of your choice.`);
-
-    const userReply = await conn.waitForMessage(from);
-    const selectedIndex = parseInt(userReply.message?.conversation?.trim()) - 1;
-
-    if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= availableQualities.length) {
-        return reply("⚠️ Invalid selection. Please reply with a valid number.");
+    } catch (e) {
+        console.log(e);
+        reply("An error occurred. Please try again later.");
     }
-
-    const selectedQuality = availableQualities[selectedIndex];
-
-    // Fetch again with selected quality
-    const finalRes = await fetch(`https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(url)}&quality=${selectedQuality}`);
-    const finalJson = await finalRes.json();
-
-    if (!finalJson.status) return reply("❌ Could not get the video at selected quality.");
-
-    const finalDownload = finalJson.result.download;
-
-    await conn.sendMessage(from, {
-        video: { url: finalDownload.url },
-        mimetype: "video/mp4",
-        caption: `✅ *Download Complete*
-
-• Title: ${json.result.data.title}
-• Quality: ${selectedQuality}p
-
-— Delivered by *SHABAN-MD BOT*`
-    }, { quoted: mek });
-
-    await conn.sendMessage(from, {
-        document: { url: finalDownload.url },
-        mimetype: "video/mp4",
-        fileName: finalDownload.filename,
-        caption: "📦 Here's your file. Enjoy!"
-    }, { quoted: mek });
-
-} catch (e) {
-    console.log(e);
-    reply(`⚠️ Error: Please try again later, ${pushname}.`);
-}
-})
+});

@@ -117,60 +117,85 @@ try {
 }
 })
 
-//play6
+//drama-dl
 
 cmd({
-    pattern: "play6",
-    desc: "To download songs.",
-    react: "📼",
+    pattern: "darama",
+    alias: ["drma-dl"],
+    desc: "To download videos.",
+    react: "⚡",
     category: "download",
     filename: __filename
 },
-async(conn, mek, m,{from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
+async(conn, mek, m,{from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply, connWait}) => {
 try {
-    if (!q) return reply("Please give me a URL or title");
+    if (!q) return reply("⚠️ Please provide a YouTube title or link.");
 
     const search = await yts(q);
     const data = search.videos[0];
     const url = data.url;
 
-    let desc = `
-*⫷<⦁MP3 DOWNLOADⵊNG⦁>⫸*
-
-📼 *MP3 FOUND!* 
-
-➥ *Title:* ${data.title} 
-➥ *Duration:* ${data.timestamp} 
-➥ *Views:* ${data.views} 
-➥ *Uploaded On:* ${data.ago} 
-➥ *Link:* ${data.url} 
-
-📼 *ENJOY THE MUSIC BROUGHT TO YOU!*
-
-> *SHABAN-MD WHATSAPP BOT* 
-> *© ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴍʀ-sʜᴀʙᴀɴ* 
-`;
-
-    await conn.sendMessage(from, { image: { url: data.thumbnail }, caption: desc }, { quoted: mek });
-
-    // New API integration
-    let apiRes = await fetch(`https://www.velyn.biz.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`);
-    let json = await apiRes.json();
-
-    if (!json.status || !json.output) return reply("Failed to fetch audio from Velyn API");
-
-    let downloadUrl = json.output;
-
-    await conn.sendMessage(from, { audio: { url: downloadUrl }, mimetype: "audio/mpeg" }, { quoted: mek });
     await conn.sendMessage(from, {
-        document: { url: downloadUrl },
-        mimetype: "audio/mpeg",
-        fileName: data.title + ".mp3",
-        caption: "*© ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴍʀ-sʜᴀʙᴀɴ*"
+        image: { url: data.thumbnail },
+        caption: `🎬 *VIDEO FOUND*
+
+• Title: ${data.title}
+• Duration: ${data.timestamp}
+• Views: ${data.views}
+• Uploaded: ${data.ago}
+• URL: ${data.url}
+
+⏳ Getting quality options...`
+    }, { quoted: mek });
+
+    // Call the API
+    const res = await fetch(`https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(url)}`);
+    const json = await res.json();
+
+    if (!json.status) return reply("❌ Failed to fetch video info.");
+
+    const availableQualities = json.result.download.availableQuality;
+
+    let qualityList = availableQualities.map((q, i) => `${i + 1}. ${q}p`).join("\n");
+    await reply(`✨ *Select a quality:*\n\n${qualityList}\n\n📥 Reply with the number of your choice.`);
+
+    const userReply = await conn.waitForMessage(from);
+    const selectedIndex = parseInt(userReply.message?.conversation?.trim()) - 1;
+
+    if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= availableQualities.length) {
+        return reply("⚠️ Invalid selection. Please reply with a valid number.");
+    }
+
+    const selectedQuality = availableQualities[selectedIndex];
+
+    // Fetch again with selected quality
+    const finalRes = await fetch(`https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(url)}&quality=${selectedQuality}`);
+    const finalJson = await finalRes.json();
+
+    if (!finalJson.status) return reply("❌ Could not get the video at selected quality.");
+
+    const finalDownload = finalJson.result.download;
+
+    await conn.sendMessage(from, {
+        video: { url: finalDownload.url },
+        mimetype: "video/mp4",
+        caption: `✅ *Download Complete*
+
+• Title: ${json.result.data.title}
+• Quality: ${selectedQuality}p
+
+— Delivered by *SHABAN-MD BOT*`
+    }, { quoted: mek });
+
+    await conn.sendMessage(from, {
+        document: { url: finalDownload.url },
+        mimetype: "video/mp4",
+        fileName: finalDownload.filename,
+        caption: "📦 Here's your file. Enjoy!"
     }, { quoted: mek });
 
 } catch (e) {
     console.log(e);
-    reply(`_Hi ${pushname}, retry later_`);
+    reply(`⚠️ Error: Please try again later, ${pushname}.`);
 }
-});
+})

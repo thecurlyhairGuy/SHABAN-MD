@@ -1,6 +1,6 @@
 const {cmd , commands} = require('../command')
+const yts = require('yt-search')
 const axios = require("axios");
-const { ytsearch, ytmp3, ytmp4 } = require('@dark-yasiya/yt-dl.js'); 
 
 cmd({
     pattern: "play5",
@@ -116,67 +116,3 @@ try {
     reply(`_Hi ${pushname}, retry later_`);
 }
 })
-
-//drama-dl
-
-cmd({ 
-    pattern: "darama", 
-    alias: ["drma-dl", "yt4"], 
-    react: "🎥", 
-    desc: "Download Youtube song", 
-    category: "main", 
-    use: '.song < Yt url or Name >', 
-    filename: __filename 
-}, async (conn, mek, m, { from, prefix, quoted, q, reply }) => { 
-    try { 
-        if (!q) return await reply("*𝐏ℓєαʂє 𝐏ɼ๏νιɖє 𝐀 𝐘ʈ 𝐔ɼℓ ๏ɼ 𝐕ιɖє๏ 𝐍αмє..*");
-        
-        const yt = await ytsearch(q);
-        if (yt.results.length < 1) return reply("No results found!");
-        
-        let yts = yt.results[0];  
-        let apiUrl = `https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(yts.url)}`;
-        
-        let response = await fetch(apiUrl);
-        let json = await response.json();
-        
-        if (!json.status || !json.result || !json.result.download || !json.result.download.url) {
-            return reply("Failed to fetch the video. Please try again later.");
-        }
-
-        const vid = json.result.data;
-        const dl = json.result.download;
-
-        let ytmsg = `╔═══〔 *𓆩ု᪳SHABAN-MDှ᪳𓆪* 〕═══❒
-║╭───────────────◆  
-║│ *❍ ᴠɪᴅᴇᴏ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ*
-║╰───────────────◆
-╚══════════════════❒
-╔══════════════════❒
-║ ⿻ *ᴛɪᴛʟᴇ:*  ${vid.title}
-║ ⿻ *ᴅᴜʀᴀᴛɪᴏɴ:*  ${vid.timestamp}
-║ ⿻ *ᴠɪᴇᴡs:*  ${vid.views}
-║ ⿻ *ᴀᴜᴛʜᴏʀ:*  ${vid.author.name}
-║ ⿻ *ʟɪɴᴋ:*  ${vid.url}
-╚══════════════════❒
-*ғꪮʀ ʏꪮꪊ ғꪮʀ ᴀʟʟ ꪮғ ᴀꜱ*`;
-
-        // Send video details with thumbnail
-        await conn.sendMessage(from, { image: { url: vid.thumbnail }, caption: ytmsg }, { quoted: mek });
-
-        // Send video file
-        await conn.sendMessage(from, { video: { url: dl.url }, mimetype: "video/mp4" }, { quoted: mek });
-
-        // Optionally send as document
-        await conn.sendMessage(from, {
-            document: { url: dl.url },
-            mimetype: "video/mp4",
-            fileName: dl.filename,
-            caption: `*${vid.title}*\n> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴀʟɪ🎐*`
-        }, { quoted: mek });
-
-    } catch (e) {
-        console.log(e);
-        reply("An error occurred. Please try again later.");
-    }
-});

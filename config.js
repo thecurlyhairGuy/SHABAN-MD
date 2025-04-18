@@ -66,7 +66,9 @@ AUTO_TYPING: process.env.AUTO_TYPING || "false",
 READ_CMD: process.env.READ_CMD || "false",
 // true if want mark commands as read 
 DEV: process.env.DEV || "923043788282",
-//replace with your whatsapp number        
+//replace with your whatsapp number
+PM_BLOCK: process.env.PM_BLOCK || 'true', 
+// isko apne hisab sr rakhna true ya false
 ANTI_VV: process.env.ANTI_VV || "false",
 // true for anti once view 
 ANTI_DEL_PATH: process.env.ANTI_DEL_PATH || "same", 

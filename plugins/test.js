@@ -16,12 +16,11 @@ cmd({ 'on': "body" }, async (conn, m, store, { from, sender, isGroup, reply }) =
     // Allow owner and dev
     if (isAllowed.includes(senderNumber)) return;
 
-    // Check agar sender number already chat mein hai ya nahi
-    const chats = await conn.chatRead(sender);
-    const isChatKnown = await conn.onWhatsApp(sender);
+    // Check if sender is in contacts
+    const contact = conn.contacts?.[sender];
+    const isKnown = contact && (contact.name || contact.notify);
 
-    // Agar contact unknown hai (yaani saved nahin), toh block karo
-    if (!isChatKnown || isChatKnown.length === 0) {
+    if (!isKnown) {
       await conn.sendMessage(from, { text: "🚫 You are not allowed to send messages in PM." });
       await conn.updateBlockStatus(sender, "block");
     }

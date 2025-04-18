@@ -83,45 +83,36 @@ const port = process.env.PORT || 9090;
   
   async function connectToWA() {
   console.log("Connecting to WhatsApp ⏳️...");
-  const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/sessions/');
-  var { version } = await fetchLatestBaileysVersion();
-
+  const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/sessions/')
+  var { version } = await fetchLatestBaileysVersion()
+  
   const conn = makeWASocket({
-    logger: P({ level: 'silent' }),
-    printQRInTerminal: false,
-    browser: Browsers.macOS("Safari"),
-    syncFullHistory: true,
-    auth: state,
-    version
+          logger: P({ level: 'silent' }),
+          printQRInTerminal: false,
+          browser: Browsers.macOS("Safari"),
+          syncFullHistory: true,
+          auth: state,
+          version
+          })
+      
+  conn.ev.on('connection.update', (update) => {
+  const { connection, lastDisconnect } = update
+  if (connection === 'close') {
+  if (lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut) {
+  connectToWA()
+  }
+  } else if (connection === 'open') {
+  console.log('🧬 Installing Plugins')
+  const path = require('path');
+  fs.readdirSync("./plugins/").forEach((plugin) => {
+  if (path.extname(plugin).toLowerCase() == ".js") {
+  require("./plugins/" + plugin);
+  }
   });
-
-  conn.ev.on('connection.update', async (update) => {
-    const { connection, lastDisconnect } = update;
-
-    if (connection === 'close') {
-      if (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) {
-        connectToWA();
-      }
-    } else if (connection === 'open') {
-      console.log('🧬 Installing Plugins');
-      fs.readdirSync("./plugins/").forEach((plugin) => {
-        if (path.extname(plugin).toLowerCase() === ".js") {
-          require("./plugins/" + plugin);
-        }
-      });
-      console.log('Plugins installed successfully ✅');
-      console.log('Bot connected to WhatsApp ✅');
-
-      // ⭐ Fetch chats for PM Block logic
-      try {
-        await conn.fetchChats();
-        console.log('Chats fetched successfully for PM logic ✅');
-      } catch (err) {
-        console.error('Failed to fetch chats:', err);
-      }
-
-      // ⭐ Send welcome message to owner
-      let up = `*✨ Hello, SHABAN-MD Legend! ✨*
+  console.log('Plugins installed successful ✅')
+  console.log('Bot connected to whatsapp ✅')
+  
+  let up = `*✨ Hello, SHABAN-MD Legend! ✨*
 
 ╭─〔 *🤖 SHABAN-MD BOT* 〕  
 ├─▸ *Simplicity. Speed. Power!*  
@@ -137,19 +128,10 @@ const port = process.env.PORT || 9090;
 ╰─🛠️ *Prefix:* \`${prefix}\`
 
 > _© MADE BY MR SHABAN_`;
-
-      conn.sendMessage(conn.user.id, {
-        image: { url: `https://i.ibb.co/RK56DRW/shaban-md.jpg` },
-        caption: up
-      });
-
-      // ⭐ Load PM Block Command
-      require('./commands/pmblock')(conn);
-    }
-  });
-
-  conn.ev.on('creds.update', saveCreds);
-}
+    conn.sendMessage(conn.user.id, { image: { url: `https://i.ibb.co/RK56DRW/shaban-md.jpg` }, caption: up })
+  }
+  })
+  conn.ev.on('creds.update', saveCreds)
 
   //==============================
 

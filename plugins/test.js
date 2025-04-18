@@ -14,9 +14,12 @@ cmd({ 'on': "body" }, async (conn, m, store, { from, sender, isGroup, reply }) =
     const senderJid = sender; // e.g. 923123456789@s.whatsapp.net
     const senderNumber = sender.split('@')[0];
 
+    // Owner or dev ko ignore karo
     if (isAllowed.includes(senderNumber)) return;
 
-    const isKnown = store.contacts?.[senderJid];
+    // Agar sender aapke contacts mein hai, use block nahi karna
+    const contact = store.contacts?.[senderJid];
+    const isKnown = contact && (contact.name || contact.verifiedName || contact.notify);
 
     if (!isKnown) {
       await conn.sendMessage(from, { text: "🚫 You are not allowed to send messages in PM." });

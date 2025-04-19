@@ -1,6 +1,5 @@
 const { cmd } = require('../command');
 const config = require("../config");
-const warnings = {};
 
 
 // Anti-Bad Words System
@@ -41,7 +40,7 @@ const linkPatterns = [
 ];
 
 cmd({
-  'on': "body"
+  on: "body"
 }, async (conn, m, store, {
   from,
   body,
@@ -52,20 +51,16 @@ cmd({
   reply
 }) => {
   try {
-    // Ensure global warnings object exists
-    if (!global.warnings) global.warnings = {};
-
-    // Check if it's a group and bot has admin rights
     if (!isGroup || isAdmins || !isBotAdmins) return;
 
-    // Link detection
-    const linkPatterns = [/https?:\/\/\S+/]; // Ensure this is properly defined
+    // Detect link in message
+    const linkPatterns = [/https?:\/\/\S+/];
     const containsLink = linkPatterns.some(pattern => pattern.test(body));
 
     if (containsLink && config.ANTI_LINK === 'true') {
       console.log(`Link detected from ${sender}: ${body}`);
 
-      // Immediately try to delete the message
+      // Delete the message
       try {
         await conn.sendMessage(from, { delete: m.key });
         console.log(`Message deleted: ${m.key.id}`);
@@ -73,29 +68,16 @@ cmd({
         console.error("Failed to delete message:", deleteError);
       }
 
-      // Increment warning count
-      global.warnings[sender] = (global.warnings[sender] || 0) + 1;
-      const warningCount = global.warnings[sender];
+      // Inform group and remove user
+      await conn.sendMessage(from, {
+        text: `🚫SHABAN-MD @${sender.split('@')[0]} sent a link and has been removed.`,
+        mentions: [sender]
+      });
 
-      if (warningCount < 4) {
-        await conn.sendMessage(from, {
-          text: `⚠️SHABAN-MD Warning ${warningCount}/4 @${sender.split('@')[0]}! Links are not allowed in this group.\nAfter 4 warnings, you will be removed. 🚫`,
-          mentions: [sender]
-        });
-      } else {
-        await conn.sendMessage(from, {
-          text: `🚫 @${sender.split('@')[0]} has been removed for sending links repeatedly after 4 warnings.`,
-          mentions: [sender]
-        });
-
-        await conn.groupParticipantsUpdate(from, [sender], "remove");
-
-        // Reset warnings after removal
-        delete global.warnings[sender];
-      }
+      await conn.groupParticipantsUpdate(from, [sender], "remove");
     }
   } catch (error) {
     console.error("Anti-link error:", error);
-    reply("❌ An error occurred while processing the message.");
+    reply("❌ An error occurred while processing the anti-link command.");
   }
 });

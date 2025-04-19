@@ -68,7 +68,5 @@ ANTI_VV: process.env.ANTI_VV || "false",
 ANTI_DEL_PATH: process.env.ANTI_DEL_PATH || "same", 
 // change it to 'same' if you want to resend deleted message in same chat 
 AUTO_RECORDING: process.env.AUTO_RECORDING || "false"
-// make it true for auto recoding
-ANTI_CALL: process.env.ANTI_CALL || "true", // set to 'true' to enable call blocking
-  REJECT_MSG: process.env.REJECT_MSG || "*_SORRY, MY BOSS IS BUSY. PLEASE DON’T CALL ME_*" 
+// make it true for auto recoding 
 };

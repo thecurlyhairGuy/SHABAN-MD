@@ -132,6 +132,33 @@ const port = process.env.PORT || 9090;
   }
   })
   conn.ev.on('creds.update', saveCreds)
+  
+  // === Debug Call Event ===
+conn.ev.process(async (events) => {
+  if (events['call']) {
+    console.log('===> Call event detected:', JSON.stringify(events.call, null, 2));
+  }
+});
+
+// === Anti-Call Handler ===
+conn.ev.on('call', async (call) => {
+  try {
+    if (config.ANTI_CALL !== 'true') return;
+
+    const id = call[0]?.id || '';
+    const from = call[0]?.from || '';
+
+    if (id && from) {
+      await conn.rejectCall(id, from);
+      await conn.sendMessage(from, {
+        text: config.REJECT_MSG || ' *_SOORY MY BOSS IS BUSY PLEASE DONT CALL ME_* '
+      });
+      console.log(`Call rejected from ${from}`);
+    }
+  } catch (err) {
+    console.error("Anti-call error:", err);
+  }
+});
 
   //==============================
 
@@ -158,32 +185,6 @@ const port = process.env.PORT || 9090;
     await conn.readMessages([mek.key]);  // Mark message as read
     console.log(`Marked message from ${mek.key.remoteJid} as read.`);
   }
-  // === Anti-Call System ===
-conn.ev.on('call', async (callData) => {
-    try {
-        const config = require('./config');
-
-        if (config.ANTI_CALL !== 'true') return;
-
-        if (!callData || !callData.calls || !callData.calls[0]) return;
-
-        const call = callData.calls[0];
-        const caller = call.from;
-        const callId = call.id;
-
-        if (!caller || !callId) return;
-
-        await conn.rejectCall(callId, caller);
-
-        await conn.sendMessage(caller, {
-            text: config.REJECT_MSG || ' *_SOORY MY BOSS IS BUSY PLEASE DONT CALL ME_* '
-        });
-
-        console.log(`Rejected call from ${caller}`);
-    } catch (error) {
-        console.error("Anti-call error:", error);
-    }
-});
     if(mek.message.viewOnceMessageV2)
     mek.message = (getContentType(mek.message) === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
     if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_SEEN === "true"){

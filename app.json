@@ -1,6 +1,6 @@
 {
   "name": "᯾𝐒𝐇𝐀𝐁𝐀𝐍-𝐌𝐃᯾",
-  "description": "Javascript WhatsApp bot made by 𝐌𝐑/𝐒𝐇𝐀𝐁𝐀𝐍",
+  "description": "Javascript WhatsApp bot made by 𝐌𝐑 𝐒𝐇𝐀𝐁𝐀𝐍",
   "logo": "https://i.ibb.co/0jBTY0gS/shaban-md.jpg",
   "keywords": ["SHABAN-MD"],
   "success_url": "/",
@@ -108,6 +108,12 @@
       "value": "true"
     }, 
     
+    "ANTI_CALL": {
+      "description": "Make it true if you want bot auto call rejected.",
+      "required": false,
+      "value": "true"
+      
+    }, 
     "ANTI_BAD_WORD": {
       "description": "Make it true if you want bot auto delete bad words.",
       "required": false,

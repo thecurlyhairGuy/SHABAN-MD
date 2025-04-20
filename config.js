@@ -42,7 +42,9 @@ READ_MESSAGE: process.env.READ_MESSAGE || "false",
 AUTO_REACT: process.env.AUTO_REACT || "false",
 // make this true or false for auto react on all msgs
 ANTI_BAD: process.env.ANTI_BAD || "true",
-// false or true for anti bad words  
+// false or true for anti bad words
+ANTI_CALL !: process.env.ANTI_CALL ! || "true",
+//false or true for call rejected
 MODE: process.env.MODE || "public",
 // make bot public-private-inbox-group 
 ANTI_LINK: process.env.ANTI_LINK || "true",

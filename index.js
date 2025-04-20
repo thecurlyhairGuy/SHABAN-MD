@@ -146,7 +146,7 @@ conn.ev.on('call', async (calls) => {
 
       await conn.rejectCall(id, from);
       await conn.sendMessage(from, {
-        text: config.REJECT_MSG || ' *🚫 𝙿𝚕𝚎𝚊𝚜𝚎 𝙳𝚘 𝙽𝚘𝚝 𝙲𝚊𝚕𝚕 𝚃𝚑𝚒𝚜 𝙽𝚞𝚖𝚋𝚎𝚛. 𝙼𝚢 𝙾𝚠𝚗𝚎𝚛 𝙸𝚜 𝙱𝚞𝚜𝚢! 𝚂𝚑𝚊𝚋𝚊𝚗 𝙼𝚍 𝙱𝚘𝚝 𝚄𝚜𝚎𝚛* '
+        text: config.REJECT_MSG || ' *_SOORY MY BOSS IS BUSY PLEASE DONT CALL ME POWERED BY SHABAN MD_* '
       });
       console.log(`Call rejected and message sent to ${from}`);
     }

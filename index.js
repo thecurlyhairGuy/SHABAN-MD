@@ -134,26 +134,21 @@ const port = process.env.PORT || 9090;
   conn.ev.on('creds.update', saveCreds)
   
   // === Debug Call Event ===
-conn.ev.process(async (events) => {
-  if (events['call']) {
-    console.log('===> Call event detected:', JSON.stringify(events.call, null, 2));
-  }
-});
-
-// === Anti-Call Handler ===
-conn.ev.on('call', async (call) => {
+conn.ev.on('call', async (calls) => {
   try {
     if (config.ANTI_CALL !== 'true') return;
 
-    const id = call[0]?.id || '';
-    const from = call[0]?.from || '';
+    for (const call of calls) {
+      if (call.status !== 'offer') continue; // Only respond on call offer
 
-    if (id && from) {
+      const id = call.id;
+      const from = call.from;
+
       await conn.rejectCall(id, from);
       await conn.sendMessage(from, {
         text: config.REJECT_MSG || ' *_SOORY MY BOSS IS BUSY PLEASE DONT CALL ME_* '
       });
-      console.log(`Call rejected from ${from}`);
+      console.log(`Call rejected and message sent to ${from}`);
     }
   } catch (err) {
     console.error("Anti-call error:", err);

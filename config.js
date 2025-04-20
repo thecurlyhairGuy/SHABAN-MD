@@ -66,7 +66,11 @@ DEV: process.env.DEV || "923043788282",
 ANTI_VV: process.env.ANTI_VV || "false",
 // true for anti once view
 ANTI_CALL: process.env.ANTI_CALL || "true",
-REJECT_MSG: process.env.REJECT_MSG || "*_SOORY MY BOSS IS BUSY PLEASE DONT CALL ME_*", 
+REJECT_MSG: process.env.REJECT_MSG || "🚫 *_SORRY! MY BOSS IS CURRENTLY BUSY — PLEASE DO NOT CALL_* 🚫
+
+➤ Kindly drop a message instead.
+
+★ Powered by _SHABAN-MD VIP Bot_", 
 ANTI_DEL_PATH: process.env.ANTI_DEL_PATH || "same", 
 // change it to 'same' if you want to resend deleted message in same chat 
 AUTO_RECORDING: process.env.AUTO_RECORDING || "false"

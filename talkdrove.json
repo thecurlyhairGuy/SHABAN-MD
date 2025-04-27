@@ -8,7 +8,7 @@
   
     "env": {
       "SESSION_ID": {
-        "description": "Put your SESSION_ID here. Make sure it starts with SHABAN-MD~  or get session id from here,  https://shaban-md-pair2-b9f08c5dc399.herokuapp.com/pair",
+        "description": "Put your SESSION_ID here. Make sure it starts with SHABAN-MD~  or get session id from here,  https://shani-kh.github.io/SHABAN-SITE/",
         "value":"",
         "required": true
         
@@ -155,10 +155,10 @@
       
     }, 
     
-    "CUSTOM_REACT_EMOJIS": {
-      "description": "put here custom react react emojis.",
+    "ANTI_CALL": {
+      "description": "Make it true if you want bot auto call rejected.",
       "required": false,
-      "value": "💝,💖,💗,❤️‍🩹,❤️,🧡,💛,💚,💙,💜,🤎,🖤,🤍"
+      "value": "true"
     }, 
     
     "ANTI_DEL_PATH": {
